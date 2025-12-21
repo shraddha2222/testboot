@@ -1,0 +1,32 @@
+name: Deploy Spring Boot
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Manual trigger button
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+    - name: Cleanup
+      run: rm -rf app target *.jar
+      
+    - name: Install Dependencies
+      run: sudo dnf check-update && sudo dnf install -y maven java-17-openjdk git
+      
+    - name: Fetch Public Spring Boot Repo
+      run: |
+        git clone https://gitlab.com/devops4672610/springbootapplication.git ./app
+        cd app && ls -la
+        
+    - name: Build JAR
+      run: |
+        cd app
+        mvn clean package -DskipTests
+        ls -la target/
+        
+    - name: Deploy Service
+      run: |
+        sudo cp app/target/*.jar /opt/springboot-app/app.jar
+        sudo systemctl restart springboot-app
+        sleep 15
