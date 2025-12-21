@@ -16,10 +16,10 @@ jobs:
       
     - name: Fetch Public Spring Boot Repo
       run: |
-        git clone https://gitlab.com/devops4672610/springbootapplication.git ./app
+        git clone https://github.com/wyona/spring-boot-hello-world-rest.git ./app
         cd app && ls -la
         
-    - name: Build JAR
+    - name: Build Spring Boot JAR
       run: |
         cd app
         mvn clean package -DskipTests
