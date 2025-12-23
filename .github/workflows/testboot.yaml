@@ -12,7 +12,7 @@ jobs:
       run: rm -rf app target *.jar
       
     - name: Install Dependencies
-      run: sudo apt check-update && sudo apt install -y maven java-17-openjdk git 
+      run: sudo apt-get update && sudo apt-get install -y maven java-17-openjdk git 
       
     - name: Fetch Public Spring Boot Repo
       run: |
