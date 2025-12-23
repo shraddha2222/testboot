@@ -16,7 +16,7 @@ jobs:
       
     - name: Fetch Public Spring Boot Repo
       run: |
-        git clone https://github.com/sahandilshan/spring-boot-rest-api-demo.git ./app
+        git clone https://github.com/bratzelk/spring-boot-hello-world.git ./app
         cd app && ls -la
         
     - name: Build Spring Boot JAR
