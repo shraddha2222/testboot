@@ -93,10 +93,9 @@ jobs:
 
       - name: Deploy JAR and run in background
         run: |
-         ssh deploy@192.168.35.9 "
-         mkdir -p /opt/springboot-app
-         pkill -f app.jar || true
-         nohup java -jar /opt/springboot-app/app.jar > /opt/springboot-app/app.log 2>&1 &
-         sleep 3
-         ps -ef | grep app.jar
-         "
+         ssh deploy@192.168.35.9 'bash -s' << 'ENDSSH'
+            pkill -f app.jar || true
+            nohup java -jar /opt/springboot-app/app.jar > /opt/springboot-app/app.log 2>&1 &
+            sleep 3
+            ps -ef | grep app.jar
+         ENDSSH
