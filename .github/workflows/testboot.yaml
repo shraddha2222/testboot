@@ -3,51 +3,51 @@ name: Deploy Spring Boot
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # Manual trigger button
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: self-hosted
 
     steps:
-      - name: Cleanup
+      - name: Cleanup workspace
         run: rm -rf app target *.jar || true
 
-      - name: Install dependencies
-        run: sudo dnf install -y maven java-17-openjdk-devel git openssh-clients rsync
-
+      - name: Ensure build tools exist
+        run: |
+          java -version
+          mvn -version
+          rsync --version
 
       - name: Create minimal Spring Boot app
         run: |
           mkdir -p app/src/main/java/com/example
           mkdir -p app/src/main/resources
 
-          # Main Application class
           cat > app/src/main/java/com/example/DemoApplication.java << 'EOF'
           package com.example;
-          
+
           import org.springframework.boot.SpringApplication;
           import org.springframework.boot.autoconfigure.SpringBootApplication;
           import org.springframework.web.bind.annotation.GetMapping;
           import org.springframework.web.bind.annotation.RestController;
-          
+
           @SpringBootApplication
           public class DemoApplication {
               public static void main(String[] args) {
                   SpringApplication.run(DemoApplication.class, args);
               }
           }
-          
+
           @RestController
           class HelloController {
               @GetMapping("/")
               public String hello() {
-                  return "Hello World from Spring Boot! 🚀";
+                  return "Hello World from Spring Boot!";
               }
           }
           EOF
 
-          # pom.xml - NO Lombok, NO JavaFX, pure Spring Boot
           cat > app/pom.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <project xmlns="http://maven.apache.org/POM/4.0.0">
@@ -55,59 +55,38 @@ jobs:
               <groupId>com.example</groupId>
               <artifactId>demo</artifactId>
               <version>0.0.1</version>
-              <packaging>jar</packaging>
-              
+
               <parent>
                   <groupId>org.springframework.boot</groupId>
                   <artifactId>spring-boot-starter-parent</artifactId>
                   <version>2.7.18</version>
-                  <relativePath/>
               </parent>
-              
+
               <properties>
                   <java.version>17</java.version>
               </properties>
-              
+
               <dependencies>
                   <dependency>
                       <groupId>org.springframework.boot</groupId>
                       <artifactId>spring-boot-starter-web</artifactId>
                   </dependency>
               </dependencies>
-              
-              <build>
-                  <plugins>
-                      <plugin>
-                          <groupId>org.springframework.boot</groupId>
-                          <artifactId>spring-boot-maven-plugin</artifactId>
-                      </plugin>
-                  </plugins>
-              </build>
           </project>
           EOF
 
-          cd app && ls -la
-
-      - name: Build Spring Boot JAR
+      - name: Build JAR
         run: |
           cd app
           mvn clean package -DskipTests
-          ls -la target/
+          ls -lh target/*.jar
 
-      - name: Configure SSH
+      - name: Deploy JAR to target VM
         run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "${{secrets.VM_B_SSH_KEY}}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H 192.168.35.9 >> ~/.ssh/known_hosts
-
-      - name: Copy JAR to target VM
-        run: |
-          rsync -avz app/target/*.jar \
+          rsync -avz app/target/demo-0.0.1.jar \
             deploy@192.168.35.9:/opt/springboot-app/app.jar
 
-      - name: Restart service on target VM
+      - name: Restart service
         run: |
           ssh deploy@192.168.35.9 \
-            'sudo systemctl daemon-reload || true; sudo systemctl restart springboot-app && sudo systemctl status springboot-app --no-pager'
+            "sudo systemctl daemon-reload && sudo systemctl restart springboot-app"
