@@ -33,13 +33,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          echo "${{ -----BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACAMvXVeQ23eC1OinAGQKeSADJn0K0Y1355ocju0h1IjyAAAAJjTtlnI07ZZ
-yAAAAAtzc2gtZWQyNTUxOQAAACAMvXVeQ23eC1OinAGQKeSADJn0K0Y1355ocju0h1IjyA
-AAAECnUe2jpExeVaIfhBuFDYQCErKtAo304oEq+C8Z8bHHNgy9dV5Dbd4LU6KcAZAp5IAM
-mfQrRjXfnmhyO7SHUiPIAAAADmdpdGh1Yi1hY3Rpb25zAQIDBAUGBw==
------END OPENSSH PRIVATE KEY----- }}" > ~/.ssh/id_ed25519
+          echo "${{secrets.VM_B_SSH_KEY}}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ 192.168.35.9 }} >> ~/.ssh/known_hosts
 
