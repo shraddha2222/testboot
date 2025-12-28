@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo dnf check-update
-          sudo dnf install -y maven openjdk-17-jdk-devel git openssh-client rsync
+          sudo dnf install -y maven openjdk-17-jdk-devel git openssh-clients rsync
 
       - name: Fetch public Spring Boot repo
         run: |
