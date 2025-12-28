@@ -14,7 +14,8 @@ jobs:
         run: rm -rf app target *.jar || true
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y maven java-17-openjdk git 
+        run: sudo dnf install -y maven java-17-openjdk-devel git openssh-clients rsync
+
 
       - name: Fetch public Spring Boot repo
         run: |
