@@ -35,14 +35,14 @@ jobs:
           chmod 700 ~/.ssh
           echo "${{secrets.VM_B_SSH_KEY}}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ 192.168.35.9 }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H 192.168.35.9 >> ~/.ssh/known_hosts
 
       - name: Copy JAR to target VM
         run: |
           rsync -avz app/target/*.jar \
-            ${{ deploy }}@${{ 192.168.35.9 }}:/opt/springboot-app/app.jar
+            deploy@192.168.35.9:/opt/springboot-app/app.jar
 
       - name: Restart service on target VM
         run: |
-          ssh ${{ deploy }}@${{ 192.168.35.9 }} \
+          ssh deploy@192.168.35.9 \
             'sudo systemctl daemon-reload || true; sudo systemctl restart springboot-app && sudo systemctl status springboot-app --no-pager'
