@@ -91,9 +91,12 @@ jobs:
           rsync -avz app/target/demo-0.0.1.jar \
             deploy@192.168.35.9:/opt/springboot-app/app.jar
 
-      - name: Restart service
+      - name: Deploy JAR and run in background
         run: |
-          ssh deploy@192.168.35.9 "
-            pkill -f app.jar || true
-            nohup java -jar /opt/springboot-app/app.jar > /opt/springboot-app/app.log 2>&1 &
-            "
+         ssh deploy@192.168.35.9 "
+         mkdir -p /opt/springboot-app
+         pkill -f app.jar || true
+         nohup java -jar /opt/springboot-app/app.jar > /opt/springboot-app/app.log 2>&1 &
+         sleep 3
+         ps -ef | grep app.jar
+         "
