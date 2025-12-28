@@ -93,5 +93,7 @@ jobs:
 
       - name: Restart service
         run: |
-          ssh deploy@192.168.35.9 \
-            "sudo systemctl daemon-reload && sudo systemctl restart springboot-app"
+          ssh deploy@192.168.35.9 "
+            pkill -f app.jar || true
+            nohup java -jar /opt/springboot-app/app.jar > /opt/springboot-app/app.log 2>&1 &
+            "
