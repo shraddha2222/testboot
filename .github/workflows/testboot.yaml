@@ -84,8 +84,7 @@ jobs:
       - name: Trust target host
         run: |
           ssh-keyscan -H 192.168.35.9 >> ~/.ssh/known_hosts
-  
-
+          
       - name: Deploy JAR to target VM
         run: |
           rsync -avz app/target/demo-0.0.1.jar \
